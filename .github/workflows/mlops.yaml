@@ -15,5 +15,5 @@ jobs:
           pip install -r requirements.txt
           python iris_supervised_model.py
           
-          echo "## Metrics" > README.md
-          cat output.txt > README.md
+          echo "## Metrics"
+          cat output.txt
