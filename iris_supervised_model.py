@@ -1,12 +1,23 @@
 # Check the versions of libraries
- # Python version
+# Python version
 
+import joblib
+import pickle
+from sklearn.metrics import (accuracy_score, classification_report,
+                             confusion_matrix)
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import sys
-import scipy
-import numpy as np
+
 # import matplotlib.pyplot as plt
 import matplotlib
+import numpy as np
 import pandas as pd
+import scipy
 import sklearn
 from sklearn import model_selection
 
@@ -21,9 +32,10 @@ print('======================================')
 
 
 # Load dataset
-url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
-column_headers = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'class']
-df = pd.read_csv(url, names=column_headers)
+data = 'sample_data.csv'
+column_headers = ['sepal-length', 'sepal-width',
+                  'petal-length', 'petal-width', 'class']
+df = pd.read_csv(data, names=column_headers)
 
 # df.to_csv('rawdata.csv')
 # print(df.shape)
@@ -34,7 +46,7 @@ df = pd.read_csv(url, names=column_headers)
 # plt.show()
 data = df.values
 X = data[:, 0:4]
-y = data[:,4]
+y = data[:, 4]
 validation_size = 0.20
 seed = 12345
 X_train, X_validation, Y_train, Y_validation = model_selection.train_test_split(
@@ -47,12 +59,6 @@ print('Y_train: {}'.format(Y_train.shape))
 print('Y_validation: {}'.format(Y_validation.shape))
 
 #import models
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVC
 
 scoring = 'accuracy'
 
@@ -68,19 +74,17 @@ models.append(('SVM', SVC()))
 results = []
 names = []
 for name, model in models:
-	kfold = model_selection.KFold(n_splits=10, random_state=seed)
-	cv_results = model_selection.cross_val_score(
-		model, X_train, Y_train, cv=kfold, scoring=scoring)
-	results.append(cv_results)
-	names.append(name)
-	msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
-	print(msg)
+    kfold = model_selection.KFold(n_splits=10, random_state=None)
+    cv_results = model_selection.cross_val_score(
+        model, X_train, Y_train, cv=kfold, scoring=scoring)
+    results.append(cv_results)
+    names.append(name)
+    msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
+    print(msg)
 
 
 # Make predictions on validation dataset
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
+
 lda = LinearDiscriminantAnalysis()
 lda.fit(X_train, Y_train)
 predictions = lda.predict(X_validation)
@@ -91,7 +95,7 @@ print(classification_report(Y_validation, predictions))
 filename = 'finalized_model.sav'
 
 # export model
-import pickle
+
 pickle.dump(lda, open(filename, 'wb'))
 
 # load model
@@ -100,5 +104,5 @@ loaded_model = pickle.load(open(filename, 'rb'))
 result = loaded_model.score(X_train, Y_train)
 print(result)
 
-from sklearn.externals import joblib
+
 joblib.dump(lda, 'finalized_model.pkl')
