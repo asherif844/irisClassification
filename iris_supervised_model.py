@@ -37,13 +37,6 @@ column_headers = ['sepal-length', 'sepal-width',
                   'petal-length', 'petal-width', 'class']
 df = pd.read_csv(data, names=column_headers)
 
-# df.to_csv('rawdata.csv')
-# print(df.shape)
-# print(df.head())
-# print(df.describe())
-# print(df.groupby('class').size())
-# df.plot(kind = 'box', subplots=True, layout = (2,2), sharex=False, sharey=False)
-# plt.show()
 data = df.values
 X = data[:, 0:4]
 y = data[:, 4]
@@ -57,6 +50,7 @@ print('X_train: {}'.format(X_train.shape))
 print('X_validation: {}'.format(X_validation.shape))
 print('Y_train: {}'.format(Y_train.shape))
 print('Y_validation: {}'.format(Y_validation.shape))
+print('======================================')
 
 #import models
 
@@ -75,7 +69,7 @@ results = []
 names = []
 with open('output.txt', 'w') as f:
 	for name, model in models:
-		kfold = model_selection.KFold(n_splits=10, random_state=None)
+		kfold = model_selection.KFold(n_splits=5, random_state=None)
 		cv_results = model_selection.cross_val_score(
 			model, X_train, Y_train, cv=kfold, scoring=scoring)
 		results.append(cv_results)
@@ -84,28 +78,3 @@ with open('output.txt', 'w') as f:
 		f.write(msg)
 		f.write('\n')
 		print(msg)
-
-
-# Make predictions on validation dataset
-
-lda = LinearDiscriminantAnalysis()
-lda.fit(X_train, Y_train)
-predictions = lda.predict(X_validation)
-print(accuracy_score(Y_validation, predictions))
-print(confusion_matrix(Y_validation, predictions))
-print(classification_report(Y_validation, predictions))
-
-filename = 'finalized_model.sav'
-
-# export model
-
-pickle.dump(lda, open(filename, 'wb'))
-
-# load model
-
-loaded_model = pickle.load(open(filename, 'rb'))
-result = loaded_model.score(X_train, Y_train)
-print(result)
-
-
-joblib.dump(lda, 'finalized_model.pkl')
