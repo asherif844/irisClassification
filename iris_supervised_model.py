@@ -69,7 +69,7 @@ results = []
 names = []
 with open('output.txt', 'w') as f:
 	for name, model in models:
-		kfold = model_selection.KFold(n_splits=5, random_state=None)
+		kfold = model_selection.KFold(n_splits=10, random_state=None)
 		cv_results = model_selection.cross_val_score(
 			model, X_train, Y_train, cv=kfold, scoring=scoring)
 		results.append(cv_results)
