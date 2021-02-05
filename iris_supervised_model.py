@@ -84,28 +84,3 @@ with open('output.txt', 'w') as f:
 		f.write(msg)
 		f.write('\n')
 		print(msg)
-
-
-# Make predictions on validation dataset
-
-lda = LinearDiscriminantAnalysis()
-lda.fit(X_train, Y_train)
-predictions = lda.predict(X_validation)
-print(accuracy_score(Y_validation, predictions))
-print(confusion_matrix(Y_validation, predictions))
-print(classification_report(Y_validation, predictions))
-
-filename = 'finalized_model.sav'
-
-# export model
-
-pickle.dump(lda, open(filename, 'wb'))
-
-# load model
-
-loaded_model = pickle.load(open(filename, 'rb'))
-result = loaded_model.score(X_train, Y_train)
-print(result)
-
-
-joblib.dump(lda, 'finalized_model.pkl')
